@@ -25,7 +25,7 @@ const mockMessages = [
     id: '1',
     senderId: '101', // Contact ID
     receiverId: '1', // Current user ID
-    content: 'Hi there! I saw your profile and I think you'd be perfect for our web development project.',
+    content: "Hi there! I saw your profile and I think you'd be perfect for our web development project.",
     createdAt: '2025-05-01T09:30:00',
     read: true,
   },
@@ -33,7 +33,7 @@ const mockMessages = [
     id: '2',
     senderId: '1', // Current user ID
     receiverId: '101', // Contact ID
-    content: 'Thanks for reaching out! I'd be happy to discuss your project in more detail.',
+    content: "Thanks for reaching out! I'd be happy to discuss your project in more detail.",
     createdAt: '2025-05-01T09:35:00',
     read: true,
   },
@@ -41,7 +41,7 @@ const mockMessages = [
     id: '3',
     senderId: '101', // Contact ID
     receiverId: '1', // Current user ID
-    content: 'Great! The project involves building a responsive website for our e-commerce business. We need someone with React and Node.js experience.',
+    content: "Great! The project involves building a responsive website for our e-commerce business. We need someone with React and Node.js experience.",
     createdAt: '2025-05-01T09:40:00',
     read: true,
   },
@@ -49,7 +49,7 @@ const mockMessages = [
     id: '4',
     senderId: '1', // Current user ID
     receiverId: '101', // Contact ID
-    content: 'That sounds perfect for my skill set. I have several years of experience with both technologies. What's your timeline for the project?',
+    content: "That sounds perfect for my skill set. I have several years of experience with both technologies. What's your timeline for the project?",
     createdAt: '2025-05-01T09:45:00',
     read: true,
   },
