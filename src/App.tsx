@@ -15,6 +15,7 @@ import ProfilePage from "./pages/ProfilePage";
 import MessagesPage from "./pages/MessagesPage";
 import NotFound from "./pages/NotFound";
 import JobApplicantsPage from "./pages/JobApplicantsPage";
+import ProposalDetailPage from "./pages/ProposalDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/jobs" element={<JobsPage />} />
             <Route path="/jobs/:id" element={<JobDetailPage />} />
             <Route path="/jobs/:id/applicants" element={<JobApplicantsPage />} />
+            <Route path="/jobs/:id/applicants/:applicationId" element={<ProposalDetailPage />} />
             <Route path="/post-job" element={<JobPostPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/messages" element={<MessagesPage />} />

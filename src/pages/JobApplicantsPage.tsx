@@ -116,7 +116,9 @@ const JobApplicantsPage = () => {
                   <div className="mb-6">
                     <h3 className="font-medium mb-2">Cover Letter</h3>
                     <div className="bg-gray-50 p-4 rounded-md">
-                      {application.coverLetter}
+                      {application.coverLetter.length > 150 
+                        ? `${application.coverLetter.substring(0, 150)}...` 
+                        : application.coverLetter}
                     </div>
                   </div>
                   
@@ -126,22 +128,29 @@ const JobApplicantsPage = () => {
                       <span className="ml-2 font-semibold">${application.proposedAmount}</span>
                     </div>
                     
-                    {application.status === 'pending' && (
-                      <div className="flex gap-3">
-                        <Button 
-                          variant="outline" 
-                          onClick={() => handleStatusChange(application.id, 'rejected')}
-                          className="border-red-300 text-red-600 hover:bg-red-50"
-                        >
-                          Reject
-                        </Button>
-                        <Button 
-                          onClick={() => handleStatusChange(application.id, 'accepted')}
-                        >
-                          Accept
-                        </Button>
-                      </div>
-                    )}
+                    <div className="flex gap-3">
+                      {application.status === 'pending' && (
+                        <>
+                          <Button 
+                            variant="outline" 
+                            onClick={() => handleStatusChange(application.id, 'rejected')}
+                            className="border-red-300 text-red-600 hover:bg-red-50"
+                          >
+                            Reject
+                          </Button>
+                          <Button 
+                            onClick={() => handleStatusChange(application.id, 'accepted')}
+                          >
+                            Accept
+                          </Button>
+                        </>
+                      )}
+                      <Button variant="outline" asChild>
+                        <Link to={`/jobs/${id}/applicants/${application.id}`}>
+                          View Details
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
