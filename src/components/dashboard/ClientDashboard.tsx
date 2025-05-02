@@ -58,6 +58,7 @@ export const ClientDashboard = () => {
   const { user } = useAuth();
   const [postedJobs, setPostedJobs] = useState<Job[]>([]);
   const [recentApplicants, setRecentApplicants] = useState<any[]>([]);
+  const [jobApplicationsMap, setJobApplicationsMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
     // Load jobs from localStorage
@@ -76,6 +77,17 @@ export const ClientDashboard = () => {
     // Load applications
     const storedApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
     if (storedApplications.length > 0) {
+      // Count applications by jobId
+      const applicationCountByJob: Record<string, number> = {};
+      storedApplications.forEach((app: JobApplication) => {
+        if (applicationCountByJob[app.jobId]) {
+          applicationCountByJob[app.jobId]++;
+        } else {
+          applicationCountByJob[app.jobId] = 1;
+        }
+      });
+      setJobApplicationsMap(applicationCountByJob);
+      
       // Process applications to match the format needed for display
       const processedApplicants = storedApplications.map((app: JobApplication) => {
         const relatedJob = storedJobs.find((job: Job) => job.id === app.jobId) || 
@@ -173,7 +185,7 @@ export const ClientDashboard = () => {
                           {job.status}
                         </Badge>
                         <span className="text-sm text-muted-foreground">
-                          {job.applicantsCount} applicants
+                          {jobApplicationsMap[job.id] || 0} applicants
                         </span>
                       </div>
                     </div>
