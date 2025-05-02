@@ -47,9 +47,19 @@ const JobDetailPage = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
-    // In a real app, fetch job by ID from the server
-    const foundJob = mockJobs.find(j => j.id === id);
-    setJob(foundJob || null);
+    // Load jobs from localStorage first
+    const storedJobs = JSON.parse(localStorage.getItem('postedJobs') || '[]');
+    
+    // Try to find the job in stored jobs first
+    const foundStoredJob = storedJobs.find((j: Job) => j.id === id);
+    
+    if (foundStoredJob) {
+      setJob(foundStoredJob);
+    } else {
+      // If not found in stored jobs, check mock jobs
+      const foundMockJob = mockJobs.find(j => j.id === id);
+      setJob(foundMockJob || null);
+    }
   }, [id]);
   
   if (!job) {
@@ -187,7 +197,7 @@ const JobDetailPage = () => {
                 <Card>
                   <CardContent className="p-6">
                     <h3 className="font-semibold mb-3">About the Client</h3>
-                    <p className="text-gray-600">Client #2{job.clientId}</p>
+                    <p className="text-gray-600">Client #{job.clientId}</p>
                     <p className="text-gray-600 mt-2">Verified Payment Method</p>
                     <p className="text-gray-600">5 Jobs Posted</p>
                     <p className="text-gray-600">4.8/5 Rating</p>
