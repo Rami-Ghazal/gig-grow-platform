@@ -1,53 +1,36 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { formatDistanceToNow } from 'date-fns';
-
-interface MessagePreview {
-  id: string;
-  contactId: string;
-  contactName: string;
-  contactAvatar?: string;
-  lastMessage: string;
-  timestamp: string;
-  unread: boolean;
-}
+import { Message } from '@/types/user';
 
 interface MessageListProps {
-  messages: MessagePreview[];
-  activeContactId?: string;
+  activeContactId: string;
   onSelectContact: (contactId: string) => void;
+  messages?: Message[]; // Make messages optional to fix the error
 }
 
-// Mock message data
-const mockMessages: MessagePreview[] = [
+// Mock contacts
+const mockContacts = [
   {
-    id: '1',
-    contactId: '101',
-    contactName: 'Alice Client',
-    contactAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    lastMessage: 'I reviewed your proposal for the website project. Can we discuss the timeline?',
-    timestamp: '2025-05-01T15:30:00',
-    unread: true,
+    id: '101',
+    name: 'Alice Client',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    lastMessage: 'Hi there! I saw your profile and I think you\'d be perfect for our web development project.',
+    timestamp: '2025-05-01T09:30:00',
+    unread: false,
   },
   {
-    id: '2',
-    contactId: '102',
-    contactName: 'Bob Recruiter',
-    contactAvatar: '',
-    lastMessage: 'Thank you for your application. Your skills match what we\'re looking for.',
-    timestamp: '2025-04-30T10:15:00',
-    unread: false,
+    id: '102',
+    name: 'Bob Recruiter',
+    avatar: '',
+    lastMessage: 'I\'d like to discuss a potential project with you.',
+    timestamp: '2025-04-30T15:45:00',
+    unread: true,
   },
 ];
 
-export const MessageList = ({ 
-  messages = mockMessages, 
-  activeContactId,
-  onSelectContact 
-}: MessageListProps) => {
+export const MessageList = ({ activeContactId, onSelectContact }: MessageListProps) => {
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -58,35 +41,34 @@ export const MessageList = ({
 
   return (
     <Card className="h-full">
-      <CardHeader className="py-4">
-        <CardTitle>Messages</CardTitle>
-      </CardHeader>
       <CardContent className="p-0">
-        <div className="space-y-1">
-          {messages.map((message) => (
-            <div 
-              key={message.id}
+        <div className="divide-y">
+          {mockContacts.map((contact) => (
+            <div
+              key={contact.id}
               className={`
-                flex items-center gap-3 p-3 cursor-pointer hover:bg-gray-100 transition-colors
-                ${activeContactId === message.contactId ? 'bg-gray-100' : ''}
+                flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-50 transition-colors
+                ${activeContactId === contact.id ? 'bg-gray-100' : ''}
               `}
-              onClick={() => onSelectContact(message.contactId)}
+              onClick={() => onSelectContact(contact.id)}
             >
               <Avatar>
-                <AvatarImage src={message.contactAvatar} />
-                <AvatarFallback>{getInitials(message.contactName)}</AvatarFallback>
+                <AvatarImage src={contact.avatar} />
+                <AvatarFallback>{getInitials(contact.name)}</AvatarFallback>
               </Avatar>
+              
               <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-medium truncate">{message.contactName}</h3>
-                  <span className="text-xs text-gray-500">
-                    {formatDistanceToNow(new Date(message.timestamp), { addSuffix: true })}
+                <div className="flex justify-between items-start">
+                  <p className="font-medium truncate">{contact.name}</p>
+                  <span className="text-xs text-gray-500 whitespace-nowrap ml-2">
+                    {new Date(contact.timestamp).toLocaleDateString()}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 truncate">{message.lastMessage}</p>
+                <p className="text-sm text-gray-600 truncate">{contact.lastMessage}</p>
               </div>
-              {message.unread && (
-                <Badge className="h-2 w-2 rounded-full p-0" />
+              
+              {contact.unread && (
+                <span className="w-2 h-2 bg-primary rounded-full flex-shrink-0" />
               )}
             </div>
           ))}

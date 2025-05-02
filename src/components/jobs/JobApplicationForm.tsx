@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Job } from '@/types/user';
+import { Job, JobApplication } from '@/types/user';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
@@ -34,8 +34,23 @@ export const JobApplicationForm = ({ job }: JobApplicationFormProps) => {
     setIsSubmitting(true);
     
     try {
+      // Create new application object
+      const newApplication: JobApplication = {
+        id: Date.now().toString(),
+        jobId: job.id,
+        freelancerId: user?.id || 'unknown',
+        coverLetter: formData.coverLetter,
+        proposedAmount: Number(formData.proposedAmount),
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+      };
+      
       // Simulate API call with delay
       await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Store application in localStorage
+      const existingApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
+      localStorage.setItem('jobApplications', JSON.stringify([...existingApplications, newApplication]));
       
       toast.success('Application submitted successfully!');
       navigate('/dashboard');

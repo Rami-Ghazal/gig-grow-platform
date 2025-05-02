@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { Job } from '@/types/user';
 
 // Job categories
 const jobCategories = [
@@ -24,7 +25,11 @@ const jobCategories = [
   "Other"
 ];
 
-export const JobPostForm = () => {
+interface JobPostFormProps {
+  onJobCreated?: (job: Job) => void;
+}
+
+export const JobPostForm = ({ onJobCreated }: JobPostFormProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,8 +58,30 @@ export const JobPostForm = () => {
     setIsSubmitting(true);
     
     try {
+      // Create new job object
+      const newJob: Job = {
+        id: Date.now().toString(),
+        clientId: user?.id || 'unknown',
+        title: formData.title,
+        description: formData.description,
+        budget: {
+          min: Number(formData.budgetMin),
+          max: Number(formData.budgetMax)
+        },
+        skills: formData.skills.split(',').map(skill => skill.trim()),
+        category: formData.category,
+        deadline: formData.deadline,
+        createdAt: new Date().toISOString(),
+        status: 'open'
+      };
+      
       // Simulate API call with delay
       await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Call the onJobCreated callback if provided
+      if (onJobCreated) {
+        onJobCreated(newJob);
+      }
       
       toast.success('Job posted successfully!');
       navigate('/dashboard');

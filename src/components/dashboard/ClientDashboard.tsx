@@ -1,11 +1,11 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Badge } from '@/components/ui/badge';
 import { Briefcase, ArrowRight, Plus } from 'lucide-react';
+import { Job, JobApplication } from '@/types/user';
 
 // Mock data for client dashboard
 const postedJobs = [
@@ -56,6 +56,47 @@ const recentApplicants = [
 
 export const ClientDashboard = () => {
   const { user } = useAuth();
+  const [postedJobs, setPostedJobs] = useState<Job[]>([]);
+  const [recentApplicants, setRecentApplicants] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Load jobs from localStorage
+    const storedJobs = JSON.parse(localStorage.getItem('postedJobs') || '[]');
+    
+    // If there are stored jobs and the user is the client who posted them, use those
+    // Otherwise fall back to mock data
+    if (storedJobs.length > 0) {
+      setPostedJobs(prev => {
+        // Filter jobs by current user if needed
+        const userJobs = user ? storedJobs.filter((job: Job) => job.clientId === user.id) : storedJobs;
+        return userJobs;
+      });
+    }
+
+    // Load applications
+    const storedApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
+    if (storedApplications.length > 0) {
+      // Process applications to match the format needed for display
+      const processedApplicants = storedApplications.map((app: JobApplication) => {
+        const relatedJob = storedJobs.find((job: Job) => job.id === app.jobId) || 
+                          { title: 'Unknown Job', skills: [] };
+        
+        return {
+          id: app.id,
+          jobId: app.jobId,
+          jobTitle: relatedJob.title,
+          freelancerId: app.freelancerId,
+          freelancerName: `Freelancer #${app.freelancerId}`, // In a real app, fetch the name
+          skills: relatedJob.skills ? relatedJob.skills.slice(0, 3) : [],
+          proposedAmount: app.proposedAmount,
+          status: app.status,
+          createdAt: app.createdAt,
+        };
+      });
+      
+      setRecentApplicants(processedApplicants);
+    }
+  }, [user]);
 
   return (
     <div className="container mx-auto px-4 py-8">

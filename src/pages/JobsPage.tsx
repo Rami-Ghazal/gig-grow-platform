@@ -62,11 +62,22 @@ const JobsPage = () => {
   const [filters, setFilters] = useState({});
   const [filteredJobs, setFilteredJobs] = useState<Job[]>(mockJobs);
 
+  useEffect(() => {
+    // Load jobs from localStorage
+    const storedJobs = JSON.parse(localStorage.getItem('postedJobs') || '[]');
+    if (storedJobs.length > 0) {
+      // Combine stored jobs with mock jobs for demo purposes
+      // In a real app, you'd only use stored or fetched jobs
+      setJobs([...storedJobs, ...mockJobs]);
+      setFilteredJobs([...storedJobs, ...mockJobs]);
+    }
+  }, []);
+
   const handleFilterChange = (newFilters: any) => {
     setFilters(newFilters);
     
     // Apply filters
-    let results = mockJobs;
+    let results = jobs;
     
     // Filter by search term
     if (newFilters.search) {

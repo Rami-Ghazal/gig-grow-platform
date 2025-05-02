@@ -1,11 +1,11 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Badge } from '@/components/ui/badge';
 import { Briefcase, ArrowRight, Search } from 'lucide-react';
+import { Job, JobApplication } from '@/types/user';
 
 // Mock data for freelancer dashboard
 const recentJobs = [
@@ -50,6 +50,40 @@ const applications = [
 
 export const FreelancerDashboard = () => {
   const { user } = useAuth();
+  const [applications, setApplications] = useState<any[]>([]);
+  const [recommendedJobs, setRecommendedJobs] = useState<Job[]>([]);
+
+  useEffect(() => {
+    // Load applications from localStorage
+    const storedApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
+    const storedJobs = JSON.parse(localStorage.getItem('postedJobs') || '[]');
+    
+    if (storedApplications.length > 0 && user) {
+      // Filter applications by current freelancer
+      const userApplications = storedApplications
+        .filter((app: JobApplication) => app.freelancerId === user.id)
+        .map((app: JobApplication) => {
+          // Find the associated job
+          const job = storedJobs.find((j: Job) => j.id === app.jobId) || { title: 'Unknown Job' };
+          
+          return {
+            id: app.id,
+            jobId: app.jobId,
+            jobTitle: job.title,
+            proposedAmount: app.proposedAmount,
+            status: app.status,
+            createdAt: app.createdAt,
+          };
+        });
+      
+      setApplications(userApplications.length > 0 ? userApplications : []);
+    }
+    
+    // Load recommended jobs
+    if (storedJobs.length > 0) {
+      setRecommendedJobs(storedJobs.slice(0, 2));
+    }
+  }, [user]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -162,7 +196,7 @@ export const FreelancerDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentJobs.map((job) => (
+              {recommendedJobs.map((job) => (
                 <div key={job.id} className="p-4 border rounded-lg hover-card-effect">
                   <h3 className="font-medium">
                     <Link to={`/jobs/${job.id}`} className="hover:text-primary">
